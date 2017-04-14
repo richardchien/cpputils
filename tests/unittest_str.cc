@@ -457,5 +457,19 @@ namespace tests {
             assert(str("abc").splitlines().size() == 1);
             assert(str().splitlines().size() == 0);
         }
+
+        TEST_METHOD(test_startswith_endswith) {
+            assert(str(u8"123...你好").startswith(u8"123.."));
+            assert(str(u8"123...你好").startswith(u8"123...你"));
+            assert(!str(u8"123...你好").startswith(u8"124"));
+            assert(str("").startswith(""));
+            assert(!str("").startswith("a"));
+
+            assert(str(u8"123...你好").endswith(u8"..你好"));
+            assert(str(u8"123...你好").endswith(u8"123...你好"));
+            assert(!str(u8"123...你好").endswith(u8"不好"));
+            assert(str("").endswith(""));
+            assert(!str("").endswith("a"));
+        }
     };
 }

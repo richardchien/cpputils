@@ -50,7 +50,7 @@ namespace rc {
          * \param t variable to convert
          */
         template <typename T>
-        explicit str(T t);
+        explicit str(const T t);
 
         const char *data() const;
         const char *c_str() const;
@@ -128,8 +128,8 @@ namespace rc {
             iterator &operator--();
             iterator operator--(int);
 
-            bool operator==(iterator other) const { return this->it_ == other.it_; }
-            bool operator!=(iterator other) const { return !(*this == other); }
+            bool operator==(const iterator &other) const { return this->it_ == other.it_; }
+            bool operator!=(const iterator &other) const { return !(*this == other); }
 
             str operator*() const;
 
@@ -156,8 +156,8 @@ namespace rc {
         std::string::const_iterator c_begin() const { return this->inner_str_.begin(); }
         std::string::const_iterator c_end() const { return this->inner_str_.end(); }
 
-        explicit str(iterator begin, iterator end);
-        explicit str(std::string::const_iterator begin, std::string::const_iterator end);
+        explicit str(const iterator &begin, const iterator &end);
+        explicit str(const std::string::const_iterator &begin, const std::string::const_iterator &end);
 
         /**
          * \brief Calculate the unicode length of the str.
@@ -184,43 +184,46 @@ namespace rc {
         bool islower() const;
 
         str strip() const { return this->strip_(true, true); }
-        str strip(str chars) const { return this->strip_(chars, true, true); }
+        str strip(const str &chars) const { return this->strip_(chars, true, true); }
         str strip(const char *c_chars) const { return this->strip_(c_chars, true, true); }
-        str strip(std::function<bool(str)> predication) const { return this->strip_(predication, true, true); }
+        str strip(const std::function<bool(str)> &predication) const { return this->strip_(predication, true, true); }
 
         str lstrip() const { return this->strip_(true, false); }
-        str lstrip(str chars) const { return this->strip_(chars, true, false); }
+        str lstrip(const str &chars) const { return this->strip_(chars, true, false); }
         str lstrip(const char *c_chars) const { return this->strip_(c_chars, true, false); }
-        str lstrip(std::function<bool(str)> predication) const { return this->strip_(predication, true, false); }
+        str lstrip(const std::function<bool(str)> &predication) const { return this->strip_(predication, true, false); }
 
         str rstrip() const { return this->strip_(false, true); }
-        str rstrip(str chars) const { return this->strip_(chars, false, true); }
+        str rstrip(const str &chars) const { return this->strip_(chars, false, true); }
         str rstrip(const char *c_chars) const { return this->strip_(c_chars, false, true); }
-        str rstrip(std::function<bool(str)> predication) const { return this->strip_(predication, false, true); }
+        str rstrip(const std::function<bool(str)> &predication) const { return this->strip_(predication, false, true); }
 
-        std::vector<str> split(std::function<bool(str)> predication, int maxsplit = -1) const;
-        std::vector<str> split(str sep, int maxsplit = -1) const;
+        std::vector<str> split(const std::function<bool(str)> &predication, int maxsplit = -1) const;
+        std::vector<str> split(const str &sep, int maxsplit = -1) const;
         std::vector<str> split(const char *c_sep, int maxsplit = -1) const;
         std::vector<str> split(int maxsplit = -1) const;
 
-        std::vector<str> rsplit(std::function<bool(str)> predication, int maxsplit = -1) const;
-        std::vector<str> rsplit(str sep, int maxsplit = -1) const;
+        std::vector<str> rsplit(const std::function<bool(str)> &predication, int maxsplit = -1) const;
+        std::vector<str> rsplit(const str &sep, int maxsplit = -1) const;
         std::vector<str> rsplit(const char *c_sep, int maxsplit = -1) const;
         std::vector<str> rsplit(int maxsplit = -1) const;
 
         std::vector<str> splitlines(bool keepends = false) const;
 
+        bool startswith(const str &prefix) const;
+        bool endswith(const str &suffix) const;
+
     private:
         std::string inner_str_;
 
-        str strip_(std::function<bool(str)> predication, bool left, bool right) const;
+        str strip_(const std::function<bool(str)> &predication, bool left, bool right) const;
         str strip_(const char *c_chars, bool left, bool right) const;
-        str strip_(str chars, bool left, bool right) const;
+        str strip_(const str &chars, bool left, bool right) const;
         str strip_(bool left, bool right) const;
     };
 
     template <typename T>
-    str::str(T t) {
+    str::str(const T t) {
         std::stringstream ss;
         ss << t;
         if (typeid(t).name() == str("bool")) {

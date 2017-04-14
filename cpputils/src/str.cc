@@ -208,7 +208,7 @@ rc::str rc::str::iterator::operator*() const {
     return str(u);
 }
 
-rc::str::str(iterator begin, iterator end) {
+rc::str::str(const iterator &begin, const iterator &end) {
     str result;
     for (auto it = begin; it != end; ++it) {
         result += *it;
@@ -216,7 +216,7 @@ rc::str::str(iterator begin, iterator end) {
     *this = result;
 }
 
-rc::str::str(std::string::const_iterator begin, std::string::const_iterator end) {
+rc::str::str(const std::string::const_iterator &begin, const std::string::const_iterator &end) {
     this->inner_str_ = std::string(begin, end);
 }
 
@@ -404,7 +404,7 @@ bool rc::str::islower() const {
     return *this == this->lower();
 }
 
-rc::str rc::str::strip_(std::function<bool(str)> predication, bool left, bool right) const {
+rc::str rc::str::strip_(const std::function<bool(str)> &predication, bool left, bool right) const {
     auto begin = this->begin();
     auto end = this->end();
     if (left) {
@@ -433,7 +433,7 @@ rc::str rc::str::strip_(const char *c_chars, bool left, bool right) const {
     return this->strip_(str(c_chars), left, right);
 }
 
-rc::str rc::str::strip_(str chars, bool left, bool right) const {
+rc::str rc::str::strip_(const str &chars, bool left, bool right) const {
     return this->strip_([&chars](auto ch) {
                             for (auto strip_ch : chars) {
                                 if (ch == strip_ch) {
@@ -452,7 +452,7 @@ rc::str rc::str::strip_(bool left, bool right) const {
                         }, left, right);
 }
 
-std::vector<rc::str> rc::str::split(std::function<bool(str)> predication, int maxsplit) const {
+std::vector<rc::str> rc::str::split(const std::function<bool(str)> &predication, int maxsplit) const {
     std::vector<str> results;
     auto begin = this->begin();
     auto end = this->end();
@@ -487,7 +487,7 @@ std::vector<rc::str> rc::str::split(std::function<bool(str)> predication, int ma
     return results;
 }
 
-std::vector<rc::str> rc::str::split(str sep, int maxsplit) const {
+std::vector<rc::str> rc::str::split(const str &sep, int maxsplit) const {
     return this->split([&sep](auto ch) {
                            for (auto sep_ch : sep) {
                                if (ch == sep_ch) {
@@ -510,7 +510,7 @@ std::vector<rc::str> rc::str::split(int maxsplit) const {
                        }, maxsplit);
 }
 
-std::vector<rc::str> rc::str::rsplit(std::function<bool(str)> predication, int maxsplit) const {
+std::vector<rc::str> rc::str::rsplit(const std::function<bool(str)> &predication, int maxsplit) const {
     std::vector<str> results_reversed;
     auto begin = this->begin();
     auto end = this->end();
@@ -550,7 +550,7 @@ std::vector<rc::str> rc::str::rsplit(std::function<bool(str)> predication, int m
     return results;
 }
 
-std::vector<rc::str> rc::str::rsplit(str sep, int maxsplit) const {
+std::vector<rc::str> rc::str::rsplit(const str &sep, int maxsplit) const {
     return this->rsplit([&sep](auto ch) {
                             for (auto sep_ch : sep) {
                                 if (ch == sep_ch) {
@@ -587,4 +587,21 @@ std::vector<rc::str> rc::str::splitlines(bool keepends) const {
         results.push_back(str(it, end));
     }
     return results;
+}
+
+static std::string escape_regex(std::string s) {
+    const std::regex esc("[.^$|()\\[\\]{}*+?\\\\]");
+    const std::string rep("\\\\&");
+    return regex_replace(s, esc, rep,
+                         std::regex_constants::match_default | std::regex_constants::format_sed);
+}
+
+bool rc::str::startswith(const str &prefix) const {
+    auto prefix_regex = std::regex("^" + escape_regex(prefix.inner_str_));
+    return regex_search(this->inner_str_, prefix_regex);
+}
+
+bool rc::str::endswith(const str &suffix) const {
+    auto suffix_regex = std::regex(escape_regex(suffix.inner_str_) + "$");
+    return regex_search(this->inner_str_, suffix_regex);
 }
