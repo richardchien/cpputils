@@ -391,10 +391,11 @@ namespace tests {
             assert(str("111a   ").rstrip(" \t") == str("111a"));
 
             assert(str(u8"ÄãÄãÄãÄãÄãÄãÄãÄãºÃ°¡°¡°¡°¡").strip(u8"Äã°¡") == str(u8"ºÃ"));
+            assert(str("").strip() == str(""));
         }
 
         TEST_METHOD(test_split) {
-            std::vector<str> sp = str(u8"   ²â ÊÔ  ").split([](auto ch) { return ch == " "; });
+            auto sp = str(u8"   ²â ÊÔ  ").split([](auto ch) { return ch == " "; });
             assert(sp.size() == 2);
             assert(sp[0] == str(u8"²â"));
             assert(sp[1] == str(u8"ÊÔ"));
@@ -410,10 +411,13 @@ namespace tests {
             assert(sp.size() == 2);
             assert(sp[0] == str(u8"²â"));
             assert(sp[1] == str(u8"ÊÔ"));
+
+            sp = str().split();
+            assert(sp.size() == 0);
         }
 
         TEST_METHOD(test_rsplit) {
-            std::vector<str> sp = str(u8"   ²â ÊÔ  ").rsplit([](auto ch) { return ch == " "; });
+            auto sp = str(u8"   ²â ÊÔ  ").rsplit([](auto ch) { return ch == " "; });
             assert(sp.size() == 2);
             assert(sp[0] == str(u8"²â"));
             assert(sp[1] == str(u8"ÊÔ"));
@@ -430,6 +434,28 @@ namespace tests {
             assert(sp.size() == 2);
             assert(sp[0] == str(u8"²â"));
             assert(sp[1] == str(u8"ÊÔ"));
+
+            sp = str().rsplit();
+            assert(sp.size() == 0);
+        }
+
+        TEST_METHOD(test_splitlines) {
+            auto s = str("   123\r\r\n\n abc \n\n\r");
+            auto sp = s.splitlines();
+            assert(sp.size() == 6);
+            assert(sp[0] == str("   123"));
+            assert(sp[1] == str(""));
+            assert(sp[2] == str(""));
+            assert(sp[5] == str(""));
+
+            sp = s.splitlines(true);
+            assert(sp.size() == 6);
+            assert(sp[0] == str("   123\r"));
+            assert(sp[1] == str("\r\n"));
+            assert(sp[5] == str("\r"));
+
+            assert(str("abc").splitlines().size() == 1);
+            assert(str().splitlines().size() == 0);
         }
     };
 }

@@ -157,6 +157,7 @@ namespace rc {
         std::string::const_iterator c_end() const { return this->inner_str_.end(); }
 
         explicit str(iterator begin, iterator end);
+        explicit str(std::string::const_iterator begin, std::string::const_iterator end);
 
         /**
          * \brief Calculate the unicode length of the str.
@@ -206,6 +207,8 @@ namespace rc {
         std::vector<str> rsplit(str sep, int maxsplit = -1) const;
         std::vector<str> rsplit(const char *c_sep, int maxsplit = -1) const;
         std::vector<str> rsplit(int maxsplit = -1) const;
+
+        std::vector<str> splitlines(bool keepends = false) const;
 
     private:
         std::string inner_str_;

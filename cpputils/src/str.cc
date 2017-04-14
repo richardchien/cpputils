@@ -4,6 +4,7 @@
 #include <codecvt>
 #include <algorithm>
 #include <cwctype>
+#include <regex>
 
 #include "utf8/utf8.h"
 #include "exceptions.h"
@@ -213,6 +214,10 @@ rc::str::str(iterator begin, iterator end) {
         result += *it;
     }
     *this = result;
+}
+
+rc::str::str(std::string::const_iterator begin, std::string::const_iterator end) {
+    this->inner_str_ = std::string(begin, end);
 }
 
 size_t rc::str::length() const {
@@ -566,4 +571,20 @@ std::vector<rc::str> rc::str::rsplit(int maxsplit) const {
                             auto wch = *wstr.c_str();
                             return iswspace(wch);
                         }, maxsplit);
+}
+
+std::vector<rc::str> rc::str::splitlines(bool keepends) const {
+    std::vector<str> results;
+    auto it = this->c_begin();
+    auto end = this->c_end();
+    std::regex exp("\\r\\n|\\r|\\n");
+    std::smatch sm;
+    while (regex_search(it, end, sm, exp)) {
+        results.push_back(str(it, it + sm.position()) + (keepends ? sm.str() : ""));
+        it += sm.position() + sm.length();
+    }
+    if (it != end) {
+        results.push_back(str(it, end));
+    }
+    return results;
 }
