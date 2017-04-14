@@ -186,17 +186,26 @@ namespace rc {
         str strip(str chars) const { return this->strip_(chars, true, true); }
         str strip(const char *c_chars) const { return this->strip_(c_chars, true, true); }
         str strip(std::function<bool(str)> predication) const { return this->strip_(predication, true, true); }
+
         str lstrip() const { return this->strip_(true, false); }
         str lstrip(str chars) const { return this->strip_(chars, true, false); }
         str lstrip(const char *c_chars) const { return this->strip_(c_chars, true, false); }
         str lstrip(std::function<bool(str)> predication) const { return this->strip_(predication, true, false); }
+
         str rstrip() const { return this->strip_(false, true); }
         str rstrip(str chars) const { return this->strip_(chars, false, true); }
         str rstrip(const char *c_chars) const { return this->strip_(c_chars, false, true); }
         str rstrip(std::function<bool(str)> predication) const { return this->strip_(predication, false, true); }
 
-        //        std::vector<str> split(str sep = str(" \t\r\n"), int maxsplit = -1);
         std::vector<str> split(std::function<bool(str)> predication, int maxsplit = -1) const;
+        std::vector<str> split(str sep, int maxsplit = -1) const;
+        std::vector<str> split(const char *c_sep, int maxsplit = -1) const;
+        std::vector<str> split(int maxsplit = -1) const;
+
+        std::vector<str> rsplit(std::function<bool(str)> predication, int maxsplit = -1) const;
+        std::vector<str> rsplit(str sep, int maxsplit = -1) const;
+        std::vector<str> rsplit(const char *c_sep, int maxsplit = -1) const;
+        std::vector<str> rsplit(int maxsplit = -1) const;
 
     private:
         std::string inner_str_;

@@ -12,14 +12,14 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-auto multibyte_to_widechar(int code_page, const char *multibyte_str) {
+static auto multibyte_to_widechar(int code_page, const char *multibyte_str) {
     auto len = MultiByteToWideChar(code_page, 0, multibyte_str, -1, nullptr, 0);
     auto c_wstr_sptr = std::shared_ptr<wchar_t>(new wchar_t[len + 1]);
     MultiByteToWideChar(code_page, 0, multibyte_str, -1, c_wstr_sptr.get(), len);
     return c_wstr_sptr;
 }
 
-auto widechar_to_multibyte(int code_page, const wchar_t *widechar_str) {
+static auto widechar_to_multibyte(int code_page, const wchar_t *widechar_str) {
     auto len = WideCharToMultiByte(code_page, 0, widechar_str, -1, nullptr, 0, nullptr, nullptr);
     auto c_str_sptr = std::shared_ptr<char>(new char[len + 1]);
     WideCharToMultiByte(code_page, 0, widechar_str, -1, c_str_sptr.get(), len, nullptr, nullptr);
@@ -464,9 +464,106 @@ std::vector<rc::str> rc::str::split(std::function<bool(str)> predication, int ma
                 ++it;
             }
             part_begin = it;
+
+            // check split times
+            if (maxsplit > 0) {
+                maxsplit--;
+            } else if (maxsplit == 0) {
+                if (it != end) {
+                    results.push_back(str(it, end));
+                }
+                break;
+            }
         } else {
             ++it;
         }
     }
+
     return results;
+}
+
+std::vector<rc::str> rc::str::split(str sep, int maxsplit) const {
+    return this->split([&sep](auto ch) {
+                           for (auto sep_ch : sep) {
+                               if (ch == sep_ch) {
+                                   return true;
+                               }
+                           }
+                           return false;
+                       }, maxsplit);
+}
+
+std::vector<rc::str> rc::str::split(const char *c_sep, int maxsplit) const {
+    return this->split(str(c_sep), maxsplit);
+}
+
+std::vector<rc::str> rc::str::split(int maxsplit) const {
+    return this->split([](auto ch) {
+                           auto wstr = ch.to_wstring();
+                           auto wch = *wstr.c_str();
+                           return iswspace(wch);
+                       }, maxsplit);
+}
+
+std::vector<rc::str> rc::str::rsplit(std::function<bool(str)> predication, int maxsplit) const {
+    std::vector<str> results_reversed;
+    auto begin = this->begin();
+    auto end = this->end();
+    auto part_end = end;
+    for (auto it = end; it != begin;) {
+        if (predication(*(--it)++)) {
+            // meet a delimiter here
+            if (it != part_end) {
+                // should split
+                results_reversed.push_back(str(it, part_end));
+            }
+            while (it != begin && predication(*(--it)++)) {
+                // move to the next (from right to left) non-delimiter character
+                --it;
+            }
+            part_end = it;
+
+            // check split times
+            if (maxsplit > 0) {
+                maxsplit--;
+            } else if (maxsplit == 0) {
+                if (it != begin) {
+                    results_reversed.push_back(str(begin, it));
+                }
+                break;
+            }
+        } else {
+            --it;
+        }
+    }
+
+    std::vector<str> results;
+    while (!results_reversed.empty()) {
+        results.push_back(results_reversed.back());
+        results_reversed.pop_back();
+    }
+    return results;
+}
+
+std::vector<rc::str> rc::str::rsplit(str sep, int maxsplit) const {
+    return this->rsplit([&sep](auto ch) {
+                            for (auto sep_ch : sep) {
+                                if (ch == sep_ch) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }, maxsplit);
+}
+
+std::vector<rc::str> rc::str::rsplit(const char *c_sep, int maxsplit) const {
+    return this->rsplit(str(c_sep), maxsplit);
+}
+
+std::vector<rc::str> rc::str::rsplit(int maxsplit) const {
+    return this->rsplit([](auto ch) {
+                            auto wstr = ch.to_wstring();
+                            auto wch = *wstr.c_str();
+                            return iswspace(wch);
+                        }, maxsplit);
 }

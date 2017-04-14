@@ -392,5 +392,44 @@ namespace tests {
 
             assert(str(u8"ÄãÄãÄãÄãÄãÄãÄãÄãºÃ°¡°¡°¡°¡").strip(u8"Äã°¡") == str(u8"ºÃ"));
         }
+
+        TEST_METHOD(test_split) {
+            std::vector<str> sp = str(u8"   ²â ÊÔ  ").split([](auto ch) { return ch == " "; });
+            assert(sp.size() == 2);
+            assert(sp[0] == str(u8"²â"));
+            assert(sp[1] == str(u8"ÊÔ"));
+
+            sp = str(u8"   ²â \nÊÔ   \t").split(" \t\n", 0);
+            assert(sp.size() == 1);
+            assert(sp[0] == str(u8"²â \nÊÔ   \t"));
+            sp = str(u8"   ²â \nÊÔ   \t   123 ").split(" \t\n", 2);
+            assert(sp.size() == 3);
+            assert(sp[2] == str(u8"123 "));
+
+            sp = str(u8"   ²â \nÊÔ   \t").split();
+            assert(sp.size() == 2);
+            assert(sp[0] == str(u8"²â"));
+            assert(sp[1] == str(u8"ÊÔ"));
+        }
+
+        TEST_METHOD(test_rsplit) {
+            std::vector<str> sp = str(u8"   ²â ÊÔ  ").rsplit([](auto ch) { return ch == " "; });
+            assert(sp.size() == 2);
+            assert(sp[0] == str(u8"²â"));
+            assert(sp[1] == str(u8"ÊÔ"));
+
+            sp = str(u8"   ²â \nÊÔ   \t").rsplit(" \t\n", 0);
+            assert(sp.size() == 1);
+            assert(sp[0] == str(u8"   ²â \nÊÔ"));
+            sp = str(u8"   ²â \nÊÔ   \t   123 ").rsplit(" \t\n", 2);
+            assert(sp.size() == 3);
+            assert(sp[0] == str(u8"   ²â"));
+            assert(sp[2] == str(u8"123"));
+
+            sp = str(u8"   ²â \nÊÔ   \t").rsplit();
+            assert(sp.size() == 2);
+            assert(sp[0] == str(u8"²â"));
+            assert(sp[1] == str(u8"ÊÔ"));
+        }
     };
 }
