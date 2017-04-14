@@ -589,7 +589,7 @@ std::vector<rc::str> rc::str::splitlines(bool keepends) const {
     return results;
 }
 
-static std::string escape_regex(std::string s) {
+static std::string escape_regex(const std::string s) {
     const std::regex esc("[.^$|()\\[\\]{}*+?\\\\]");
     const std::string rep("\\\\&");
     return regex_replace(s, esc, rep,
