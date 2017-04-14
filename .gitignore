@@ -1,0 +1,12 @@
+.vs
+.vscode
+Release
+Debug
+*.sdf
+*.opensdf
+*.suo
+ipch
+out
+cpputils/out
+demo/out
+tests/out
