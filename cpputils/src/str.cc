@@ -28,6 +28,13 @@ static auto widechar_to_multibyte(int code_page, const wchar_t *widechar_str) {
 }
 #endif
 
+static std::string regex_escape(const std::string &s) {
+    const std::regex esc("[.^$|()\\[\\]{}*+?\\\\]");
+    const std::string rep("\\\\&");
+    return regex_replace(s, esc, rep,
+                         std::regex_constants::match_default | std::regex_constants::format_sed);
+}
+
 rc::str::str() {}
 
 rc::str::str(const str &str) : str() {
@@ -488,14 +495,30 @@ std::vector<rc::str> rc::str::split(const std::function<bool(str)> &predication,
 }
 
 std::vector<rc::str> rc::str::split(const str &sep, int maxsplit) const {
-    return this->split([&sep](auto ch) {
-                           for (auto sep_ch : sep) {
-                               if (ch == sep_ch) {
-                                   return true;
-                               }
-                           }
-                           return false;
-                       }, maxsplit);
+    const auto &sep_bytes = sep.inner_str_;
+    const auto sep_bytes_len = sep_bytes.length();
+
+    if (sep_bytes_len == 0) {
+        throw ValueError("empty separator");
+    }
+
+    std::vector<str> results;
+    auto end = this->c_end();
+    auto it = this->c_begin();
+    auto cur_end = it;
+    while ((cur_end = search(it, end, sep_bytes.begin(), sep_bytes.end())) != end) {
+        // check split times
+        if (maxsplit > 0) {
+            maxsplit--;
+        } else if (maxsplit == 0) {
+            break;
+        }
+
+        results.push_back(str(it, cur_end));
+        it = cur_end + sep_bytes_len;
+    }
+    results.push_back(str(it, end));
+    return results;
 }
 
 std::vector<rc::str> rc::str::split(const char *c_sep, int maxsplit) const {
@@ -551,14 +574,36 @@ std::vector<rc::str> rc::str::rsplit(const std::function<bool(str)> &predication
 }
 
 std::vector<rc::str> rc::str::rsplit(const str &sep, int maxsplit) const {
-    return this->rsplit([&sep](auto ch) {
-                            for (auto sep_ch : sep) {
-                                if (ch == sep_ch) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }, maxsplit);
+    const auto &sep_bytes = sep.inner_str_;
+    const auto sep_bytes_len = sep_bytes.length();
+
+    if (sep_bytes_len == 0) {
+        throw ValueError("empty separator");
+    }
+
+    std::vector<str> results_reversed;
+    auto it = this->c_end();
+    auto begin = this->c_begin();
+    auto cur_sep_pos = it;
+    while ((cur_sep_pos = find_end(begin, it, sep_bytes.begin(), sep_bytes.end())) != it) {
+        // check split times
+        if (maxsplit > 0) {
+            maxsplit--;
+        } else if (maxsplit == 0) {
+            break;
+        }
+
+        results_reversed.push_back(str(cur_sep_pos + sep_bytes_len, it));
+        it = cur_sep_pos;
+    }
+    results_reversed.push_back(str(begin, it));
+
+    std::vector<str> results;
+    while (!results_reversed.empty()) {
+        results.push_back(results_reversed.back());
+        results_reversed.pop_back();
+    }
+    return results;
 }
 
 std::vector<rc::str> rc::str::rsplit(const char *c_sep, int maxsplit) const {
@@ -589,19 +634,12 @@ std::vector<rc::str> rc::str::splitlines(bool keepends) const {
     return results;
 }
 
-static std::string escape_regex(const std::string s) {
-    const std::regex esc("[.^$|()\\[\\]{}*+?\\\\]");
-    const std::string rep("\\\\&");
-    return regex_replace(s, esc, rep,
-                         std::regex_constants::match_default | std::regex_constants::format_sed);
-}
-
 bool rc::str::startswith(const str &prefix) const {
-    auto prefix_regex = std::regex("^" + escape_regex(prefix.inner_str_));
+    auto prefix_regex = std::regex("^" + regex_escape(prefix.inner_str_));
     return regex_search(this->inner_str_, prefix_regex);
 }
 
 bool rc::str::endswith(const str &suffix) const {
-    auto suffix_regex = std::regex(escape_regex(suffix.inner_str_) + "$");
+    auto suffix_regex = std::regex(regex_escape(suffix.inner_str_) + "$");
     return regex_search(this->inner_str_, suffix_regex);
 }

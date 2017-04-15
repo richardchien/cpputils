@@ -400,12 +400,18 @@ namespace tests {
             assert(sp[0] == str(u8"²â"));
             assert(sp[1] == str(u8"ÊÔ"));
 
-            sp = str(u8"   ²â \nÊÔ   \t").split(" \t\n", 0);
-            assert(sp.size() == 1);
-            assert(sp[0] == str(u8"²â \nÊÔ   \t"));
-            sp = str(u8"   ²â \nÊÔ   \t   123 ").split(" \t\n", 2);
+            sp = str(u8"11232123123321123").split("123");
+            assert(sp.size() == 5);
+            assert(sp[0] == str(u8"1"));
+            assert(sp[2] == str());
+            assert(sp[4] == str());
+            sp = str(u8"1123²â ÊÔ123123...123").split("123", 2);
             assert(sp.size() == 3);
-            assert(sp[2] == str(u8"123 "));
+            assert(sp[0] == str(u8"1"));
+            assert(sp[1] == str(u8"²â ÊÔ"));
+            assert(sp[2] == str(u8"123...123"));
+            sp = str(u8"ÄãºÃÄãºÃÄãºÃ").split(u8"Äã");
+            assert(sp.size() == 4);
 
             sp = str(u8"   ²â \nÊÔ   \t").split();
             assert(sp.size() == 2);
@@ -414,6 +420,18 @@ namespace tests {
 
             sp = str().split();
             assert(sp.size() == 0);
+            sp = str().split("abc");
+            assert(sp.size() == 1);
+            assert(sp[0] == str());
+
+            try {
+                sp = str().split("");
+                fail();
+            } catch (ValueError &) {
+                pass();
+            } catch (...) {
+                fail();
+            }
         }
 
         TEST_METHOD(test_rsplit) {
@@ -422,13 +440,18 @@ namespace tests {
             assert(sp[0] == str(u8"²â"));
             assert(sp[1] == str(u8"ÊÔ"));
 
-            sp = str(u8"   ²â \nÊÔ   \t").rsplit(" \t\n", 0);
-            assert(sp.size() == 1);
-            assert(sp[0] == str(u8"   ²â \nÊÔ"));
-            sp = str(u8"   ²â \nÊÔ   \t   123 ").rsplit(" \t\n", 2);
+            sp = str(u8"11232123123321123").rsplit("123");
+            assert(sp.size() == 5);
+            assert(sp[0] == str(u8"1"));
+            assert(sp[2] == str());
+            assert(sp[4] == str());
+            sp = str(u8"1123²â ÊÔ123123...123").rsplit("123", 2);
             assert(sp.size() == 3);
-            assert(sp[0] == str(u8"   ²â"));
-            assert(sp[2] == str(u8"123"));
+            assert(sp[0] == str(u8"1123²â ÊÔ123"));
+            assert(sp[1] == str(u8"..."));
+            assert(sp[2] == str());
+            sp = str(u8"ÄãºÃÄãºÃÄãºÃ").rsplit(u8"Äã");
+            assert(sp.size() == 4);
 
             sp = str(u8"   ²â \nÊÔ   \t").rsplit();
             assert(sp.size() == 2);
@@ -437,6 +460,18 @@ namespace tests {
 
             sp = str().rsplit();
             assert(sp.size() == 0);
+            sp = str().rsplit("abc");
+            assert(sp.size() == 1);
+            assert(sp[0] == str());
+
+            try {
+                sp = str().rsplit("");
+                fail();
+            } catch (ValueError &) {
+                pass();
+            } catch (...) {
+                fail();
+            }
         }
 
         TEST_METHOD(test_splitlines) {

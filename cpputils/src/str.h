@@ -225,11 +225,10 @@ namespace rc {
     template <typename T>
     str::str(const T t) {
         std::stringstream ss;
-        ss << t;
         if (typeid(t).name() == str("bool")) {
-            this->inner_str_ = ss.str() == "1" ? "true" : "false";
-        } else {
-            this->inner_str_ = ss.str();
+            ss << std::boolalpha;
         }
+        ss << t;
+        this->inner_str_ = ss.str();
     }
 }

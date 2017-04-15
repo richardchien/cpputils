@@ -8,9 +8,9 @@ using std::cout;
 using std::endl;
 
 int main() {
-    auto sp = str(u8"   123\r\r\n\n abc \n\n\r").splitlines();
-    for (auto sub : sp) {
-        cout << sub << "|" << endl;
+    auto sp = str(u8"1123²â ÊÔ123123...123").rsplit(u8"123", 2);
+    for (auto seg : sp) {
+        cout << seg << "|" << endl;
     }
 
     system("pause");
