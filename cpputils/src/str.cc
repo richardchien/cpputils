@@ -704,6 +704,7 @@ rc::str rc::str::format_(const std::vector<str> &v) const {
         result += v[index].to_bytes();
         it += match.position() + match.length();
     }
+    result += std::string(it, end);
 
     return str(result);
 }

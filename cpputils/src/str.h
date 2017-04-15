@@ -236,6 +236,8 @@ namespace rc {
         str strip_(const str &chars, bool left, bool right) const;
         str strip_(bool left, bool right) const;
 
+        static void variadic_to_str_vector_(std::shared_ptr<std::vector<str>> &vp) {}
+
         template <typename T>
         static void variadic_to_str_vector_(std::shared_ptr<std::vector<str>> &vp, T value) {
             vp->push_back(str(value));
@@ -263,7 +265,9 @@ namespace rc {
     template <typename ...Targs>
     str str::format(const Targs ...args) {
         auto vp = std::make_shared<std::vector<str>>();
-        str::variadic_to_str_vector_(vp, args...);
+        if (sizeof...(args) > 0) {
+            str::variadic_to_str_vector_(vp, args...);
+        }
         return this->format_(*vp);
     }
 }

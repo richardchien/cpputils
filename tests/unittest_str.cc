@@ -535,5 +535,38 @@ namespace tests {
             assert(str("").endswith(""));
             assert(!str("").endswith("a"));
         }
+
+        TEST_METHOD(test_format) {
+            assert(str().format(1, 2) == str());
+            assert(str("a{}b{}c").format(1, 2) == str("a1b2c"));
+            assert(str(L"a{0}≤‚ ‘{0}c{1}").format(1, 2) == str(L"a1≤‚ ‘1c2"));
+
+            try {
+                str("{}").format();
+                fail();
+            } catch (IndexError &) {
+                pass();
+            } catch (...) {
+                fail();
+            }
+
+            try {
+                str("{1}").format("abc");
+                fail();
+            } catch (IndexError &) {
+                pass();
+            } catch (...) {
+                fail();
+            }
+
+            try {
+                str("{}{0}{1}").format(1, 2, 3);
+                fail();
+            } catch (ValueError &) {
+                pass();
+            } catch (...) {
+                fail();
+            }
+        }
     };
 }
