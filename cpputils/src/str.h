@@ -5,6 +5,7 @@
 #include <functional>
 #include <vector>
 #include <regex>
+#include <memory>
 
 #include "simple_types.h"
 
@@ -19,24 +20,28 @@ namespace rc {
          * \brief Create a str object from a std::string (must in UTF-8).
          * \param str a std::string object
          */
+        // ReSharper disable once CppNonExplicitConvertingConstructor
         str(const std::string &str);
 
         /**
          * \brief Create a str object from a C string (must in UTF-8).
          * \param c_str a const char pointer (C string)
          */
+        // ReSharper disable once CppNonExplicitConvertingConstructor
         str(const char *c_str);
 
         /**
          * \brief Create a str object from a std::wstring.
          * \param wstr a std::wstring object
          */
+        // ReSharper disable once CppNonExplicitConvertingConstructor
         str(const std::wstring &wstr);
 
         /**
-        * \brief Create a str object from a C widechar string.
-        * \param c_wstr a const wchar_t pointer (C widechar string)
-        */
+         * \brief Create a str object from a C widechar string.
+         * \param c_wstr a const wchar_t pointer (C widechar string)
+         */
+        // ReSharper disable once CppNonExplicitConvertingConstructor
         str(const wchar_t *c_wstr);
 
         /**
@@ -95,6 +100,11 @@ namespace rc {
         explicit operator long long() const;
         explicit operator float() const;
         explicit operator double() const;
+
+        // ReSharper disable once CppNonExplicitConversionOperator
+        operator std::basic_string<char>() const { return this->to_bytes(); }
+        // ReSharper disable once CppNonExplicitConversionOperator
+        operator std::basic_string<wchar_t>() const { return this->to_wstring(); }
 
         /**
          * \brief Iterator class of the str class.
@@ -215,6 +225,9 @@ namespace rc {
         bool startswith(const str &prefix) const;
         bool endswith(const str &suffix) const;
 
+        template <typename ...Targs>
+        str format(const Targs ...args);
+
     private:
         std::string inner_str_;
 
@@ -222,6 +235,19 @@ namespace rc {
         str strip_(const char *c_chars, bool left, bool right) const;
         str strip_(const str &chars, bool left, bool right) const;
         str strip_(bool left, bool right) const;
+
+        template <typename T>
+        static void variadic_to_str_vector_(std::shared_ptr<std::vector<str>> &vp, T value) {
+            vp->push_back(str(value));
+        }
+
+        template <typename T, typename ...Targs>
+        static void variadic_to_str_vector_(std::shared_ptr<std::vector<str>> &vp, T value, Targs &...others) {
+            vp->push_back(str(value));
+            variadic_to_str_vector_(vp, others...);
+        }
+
+        str format_(const std::vector<str> &v) const;
     };
 
     template <typename T>
@@ -232,5 +258,12 @@ namespace rc {
         }
         ss << t;
         this->inner_str_ = ss.str();
+    }
+
+    template <typename ...Targs>
+    str str::format(const Targs ...args) {
+        auto vp = std::make_shared<std::vector<str>>();
+        str::variadic_to_str_vector_(vp, args...);
+        return this->format_(*vp);
     }
 }

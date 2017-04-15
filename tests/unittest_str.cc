@@ -255,6 +255,21 @@ namespace tests {
             }
         }
 
+        TEST_METHOD(test_string_and_wstring_casting) {
+            assert(std::string(str(u8"≤‚ ‘abc")) == u8"≤‚ ‘abc");
+            assert(std::string(str(u8"≤‚ ‘abc")) != u8"≤‚ ‘");
+            assert(std::wstring(str(u8"≤‚ ‘abc")) == L"≤‚ ‘abc");
+            assert(std::wstring(str(u8"≤‚ ‘abc")) != L"≤‚ ‘");
+
+            auto s = str("abc");
+            std::string s1 = s;
+            assert(s1 == s.to_bytes());
+            std::wstring s2 = s;
+            assert(s2 == s.to_wstring());
+            assert(s1 == s);
+            assert(s2 == s);
+        }
+
         TEST_METHOD(test_iterator) {
             auto s = str(u8"a≤‚ ‘");
             auto it = s.begin();

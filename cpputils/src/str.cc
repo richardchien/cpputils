@@ -1,10 +1,8 @@
 ﻿#include "str.h"
 
-#include <memory>
 #include <codecvt>
 #include <algorithm>
 #include <cwctype>
-#include <regex>
 
 #include "utf8/utf8.h"
 #include "exceptions.h"
@@ -662,4 +660,50 @@ bool rc::str::startswith(const str &prefix) const {
 bool rc::str::endswith(const str &suffix) const {
     auto suffix_regex = std::regex(regex_escape(suffix.inner_str_) + "$");
     return regex_search(this->inner_str_, suffix_regex);
+}
+
+rc::str rc::str::format_(const std::vector<str> &v) const {
+    const static auto UNDETERMINED = 0;
+    const static auto AUTOMATIC = 1;
+    const static auto MANUAL = 2;
+    auto field_numbering_mode = UNDETERMINED;
+    size_t field_number = 0;
+    auto vector_size = v.size();
+
+    std::string result;
+    auto it = this->c_begin();
+    auto end = this->c_end();
+    std::smatch match;
+    while (regex_search(it, end, match, std::regex("\\{(\\d*)\\}"))) {
+        result += std::string(it, it + match.position());
+
+        auto number_str = match.str(1);
+        auto cur_numbering_mode = number_str.length() == 0 ? AUTOMATIC : MANUAL;
+        if (field_numbering_mode == UNDETERMINED) {
+            // first time determine the field numbering mode
+            field_numbering_mode = cur_numbering_mode;
+        } else if (field_numbering_mode != cur_numbering_mode) {
+            throw ValueError("cannot switch between automatic field numbering and manual field specification");
+        }
+
+        size_t index = -1;
+        switch (field_numbering_mode) {
+        case AUTOMATIC:
+            index = field_number++;
+            break;
+        case MANUAL:
+            index = stoul(number_str);
+            break;
+        default: break; // impossible to get here
+        }
+
+        if (index >= vector_size) {
+            throw IndexError("args not enough");
+        }
+
+        result += v[index].to_bytes();
+        it += match.position() + match.length();
+    }
+
+    return str(result);
 }
