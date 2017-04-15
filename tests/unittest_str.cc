@@ -1,9 +1,5 @@
 #include "CppUnitTest.h"
 
-#include <string>
-#include <limits>
-#include <algorithm>
-
 #include "cpputils/include/cpputils.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -472,6 +468,24 @@ namespace tests {
             } catch (...) {
                 fail();
             }
+        }
+
+        TEST_METHOD(test_regex_split) {
+            auto sp = str(u8"你好123abc0").split(std::regex("\\d+"));
+            assert(sp.size() == 3);
+            assert(sp[0] == str(u8"你好"));
+            assert(sp[2] == str());
+            sp = str(u8"你好123abc0").split(std::regex("non-exist"));
+            assert(sp.size() == 1);
+            sp = str(u8"你好123abc0").split(std::regex("ABc", std::regex_constants::icase));
+            assert(sp.size() == 2);
+            assert(sp[1] == str(u8"0"));
+
+            sp = str(u8"你好123abc0").split(std::regex("\\d+"), 0);
+            assert(sp.size() == 1);
+            sp = str(u8"你好123abc0").split(std::regex("\\d+"), 1);
+            assert(sp.size() == 2);
+            assert(sp[1] == str(u8"abc0"));
         }
 
         TEST_METHOD(test_splitlines) {

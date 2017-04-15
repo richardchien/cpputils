@@ -4,6 +4,7 @@
 #include <sstream>
 #include <functional>
 #include <vector>
+#include <regex>
 
 #include "simple_types.h"
 
@@ -202,6 +203,7 @@ namespace rc {
         std::vector<str> split(const str &sep, int maxsplit = -1) const;
         std::vector<str> split(const char *c_sep, int maxsplit = -1) const;
         std::vector<str> split(int maxsplit = -1) const;
+        std::vector<str> split(const std::regex &pattern, int maxsplit = -1) const;
 
         std::vector<str> rsplit(const std::function<bool(str)> &predication, int maxsplit = -1) const;
         std::vector<str> rsplit(const str &sep, int maxsplit = -1) const;

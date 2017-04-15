@@ -533,6 +533,26 @@ std::vector<rc::str> rc::str::split(int maxsplit) const {
                        }, maxsplit);
 }
 
+std::vector<rc::str> rc::str::split(const std::regex &pattern, int maxsplit) const {
+    std::vector<str> results;
+    auto end = this->c_end();
+    auto it = this->c_begin();
+    std::smatch match;
+    while (regex_search(it, end, match, pattern)) {
+        // check split times
+        if (maxsplit > 0) {
+            maxsplit--;
+        } else if (maxsplit == 0) {
+            break;
+        }
+
+        results.push_back(str(it, it + match.position()));
+        it += match.position() + match.length();
+    }
+    results.push_back(str(it, end));
+    return results;
+}
+
 std::vector<rc::str> rc::str::rsplit(const std::function<bool(str)> &predication, int maxsplit) const {
     std::vector<str> results_reversed;
     auto begin = this->begin();
