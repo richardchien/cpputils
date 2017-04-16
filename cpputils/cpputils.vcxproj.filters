@@ -14,14 +14,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\str.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="include\cpputils.h">
       <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="src\exceptions.h">
-      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\utf8\checked.h">
       <Filter>src\utf8</Filter>
@@ -35,8 +29,14 @@
     <ClInclude Include="src\utf8\utf8.h">
       <Filter>src\utf8</Filter>
     </ClInclude>
-    <ClInclude Include="src\simple_types.h">
-      <Filter>src</Filter>
+    <ClInclude Include="include\exceptions.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simple_types.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\str.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -23,9 +23,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cpputils.h" />
-    <ClInclude Include="src\exceptions.h" />
-    <ClInclude Include="src\simple_types.h" />
-    <ClInclude Include="src\str.h" />
+    <ClInclude Include="include\exceptions.h" />
+    <ClInclude Include="include\simple_types.h" />
+    <ClInclude Include="include\str.h" />
     <ClInclude Include="src\utf8\checked.h" />
     <ClInclude Include="src\utf8\core.h" />
     <ClInclude Include="src\utf8\unchecked.h" />
@@ -88,25 +88,25 @@
     <TargetName>cpputils_d</TargetName>
     <OutDir>$(SolutionDir)out\</OutDir>
     <IntDir>out\</IntDir>
-    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include\</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>cpputils_d</TargetName>
     <OutDir>$(SolutionDir)out\$(Platform)\</OutDir>
     <IntDir>out\$(Platform)\</IntDir>
-    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include\</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>cpputils</TargetName>
     <OutDir>$(SolutionDir)out\</OutDir>
     <IntDir>out\</IntDir>
-    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include\</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>cpputils</TargetName>
     <OutDir>$(SolutionDir)out\$(Platform)\</OutDir>
     <IntDir>out\$(Platform)\</IntDir>
-    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include\</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
