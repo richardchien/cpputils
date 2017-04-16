@@ -7,6 +7,6 @@ Debug
 *.suo
 ipch
 out
+demo
 cpputils/out
-demo/out
 tests/out
