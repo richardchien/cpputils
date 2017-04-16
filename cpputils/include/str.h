@@ -20,28 +20,24 @@ namespace rc {
          * \brief Create a str object from a std::string (must in UTF-8).
          * \param str a std::string object
          */
-        // ReSharper disable once CppNonExplicitConvertingConstructor
         str(const std::string &str);
 
         /**
          * \brief Create a str object from a C string (must in UTF-8).
          * \param c_str a const char pointer (C string)
          */
-        // ReSharper disable once CppNonExplicitConvertingConstructor
         str(const char *c_str);
 
         /**
          * \brief Create a str object from a std::wstring.
          * \param wstr a std::wstring object
          */
-        // ReSharper disable once CppNonExplicitConvertingConstructor
         str(const std::wstring &wstr);
 
         /**
          * \brief Create a str object from a C widechar string.
          * \param c_wstr a const wchar_t pointer (C widechar string)
          */
-        // ReSharper disable once CppNonExplicitConvertingConstructor
         str(const wchar_t *c_wstr);
 
         /**
@@ -101,9 +97,7 @@ namespace rc {
         explicit operator float() const;
         explicit operator double() const;
 
-        // ReSharper disable once CppNonExplicitConversionOperator
         operator std::basic_string<char>() const { return this->to_bytes(); }
-        // ReSharper disable once CppNonExplicitConversionOperator
         operator std::basic_string<wchar_t>() const { return this->to_wstring(); }
 
         /**
