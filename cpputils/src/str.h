@@ -225,8 +225,16 @@ namespace rc {
         bool startswith(const str &prefix) const;
         bool endswith(const str &suffix) const;
 
-        template <typename ...Targs>
-        str format(const Targs ...args);
+        template <typename ...Args>
+        str format(const Args ...args) const;
+
+        index_t find(const str &sub) const;
+        index_t rfind(const str &sub) const;
+
+        template <typename Iter>
+        str join(const Iter &iterable) const;
+
+        str replace(const str &old_sub, const str &new_sub, int count = -1) const;
 
     private:
         std::string inner_str_;
@@ -262,12 +270,27 @@ namespace rc {
         this->inner_str_ = ss.str();
     }
 
-    template <typename ...Targs>
-    str str::format(const Targs ...args) {
+    template <typename ...Args>
+    str str::format(const Args ...args) const {
         auto vp = std::make_shared<std::vector<str>>();
         if (sizeof...(args) > 0) {
             str::variadic_to_str_vector_(vp, args...);
         }
         return this->format_(*vp);
+    }
+
+    template <typename Iter>
+    str str::join(const Iter &iterable) const {
+        auto is_first = true;
+        std::string result;
+        for (auto elem : iterable) {
+            if (is_first) {
+                is_first = false;
+            } else {
+                result += this->inner_str_;
+            }
+            result += str(elem);
+        }
+        return str(result);
     }
 }

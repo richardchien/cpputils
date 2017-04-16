@@ -568,5 +568,39 @@ namespace tests {
                 fail();
             }
         }
+
+        TEST_METHOD(test_find_and_rfind) {
+            assert(str(u8"≤‚ ‘abc").find(u8"abc") == 2);
+            assert(str(u8"≤‚ ‘abc").find(u8"≤‚") == 0);
+            assert(str(u8"≤‚ ‘abc").find(u8"abcd") == -1);
+            assert(str().find("abcd") == -1);
+            assert(str().find("") == 0);
+            assert(str("abc").find("") == 0);
+
+            assert(str(u8"≤‚ ‘abcabc").rfind(u8"abc") == 5);
+            assert(str(u8"≤‚ ‘abcabc").rfind(u8"≤‚") == 0);
+            assert(str(u8"≤‚ ‘abc").rfind(u8"abcd") == -1);
+            assert(str().rfind("abcd") == -1);
+            assert(str().rfind("") == 0);
+            assert(str("abc").rfind("") == 3);
+        }
+
+        TEST_METHOD(test_join) {
+            assert(str("+").join(std::vector<int>{1, 2, 3}) == str("1+2+3"));
+            assert(str("/").join(std::vector<std::string>{"abc", "def"}) == str("abc/def"));
+            assert(str("/").join(std::vector<std::string>{"a"}) == str("a"));
+            assert(str("/").join(std::vector<std::string>{}) == str());
+            assert(str().join(std::vector<std::string>{"a", "b", "c"}) == str("abc"));
+        }
+
+        TEST_METHOD(test_replace) {
+            assert(str(u8"abc≤‚ ‘≤‚ ‘abc").replace(u8"≤‚", u8"123") == str(u8"abc123 ‘123 ‘abc"));
+            assert(str(u8"abc≤‚ ‘≤‚ ‘abc").replace(u8"≤‚", u8"123", 1) == str(u8"abc123 ‘≤‚ ‘abc"));
+            assert(str("abc").replace("", "123") == str("123a123b123c123"));
+            assert(str("abc").replace("", "123", 0) == str("abc"));
+            assert(str("abc").replace("", "123", 2) == str("123a123bc"));
+            assert(str("").replace("", "123") == str("123"));
+            assert(str("").replace("", "123", 0) == str(""));
+        }
     };
 }

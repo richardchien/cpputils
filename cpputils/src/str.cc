@@ -708,3 +708,48 @@ rc::str rc::str::format_(const std::vector<str> &v) const {
 
     return str(result);
 }
+
+rc::index_t rc::str::find(const str &sub) const {
+    if (sub.inner_str_.length() == 0) {
+        // substring is empty
+        return 0;
+    }
+    auto sp = this->split(sub, 1);
+    if (sp.size() <= 1) {
+        // not found
+        return -1;
+    }
+    return sp[0].length();
+}
+
+rc::index_t rc::str::rfind(const str &sub) const {
+    if (sub.inner_str_.length() == 0) {
+        // substring is empty
+        return this->length();
+    }
+    auto sp = this->rsplit(sub, 1);
+    if (sp.size() <= 1) {
+        // not found
+        return -1;
+    }
+    return sp[0].length();
+}
+
+rc::str rc::str::replace(const str &old_sub, const str &new_sub, int count) const {
+    if (old_sub.inner_str_.length() == 0) {
+        // old sub is empty
+        std::string result;
+        for (auto ch : *this) {
+            if (count != 0) {
+                count--;
+                result += new_sub;
+            }
+            result += ch;
+        }
+        if (count != 0) {
+            result += new_sub;
+        }
+        return str(result);
+    }
+    return new_sub.join(this->split(old_sub, count));
+}

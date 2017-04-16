@@ -15,7 +15,7 @@ namespace rc {
 
         template <typename E, typename = typename std::enable_if<std::is_base_of<Exception, E>::value, E>::type>
         friend std::ostream &operator<<(std::ostream &os, const E &obj) {
-            os << str(typeid(obj).name()).split("::", 1)[1] << ": " << obj.msg;
+            os << str(typeid(obj).name()).split(" ", 1)[1] << ": " << obj.msg;
             return os;
         }
     };
