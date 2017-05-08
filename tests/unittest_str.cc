@@ -76,11 +76,10 @@ namespace tests {
         }
 
         TEST_METHOD(test_ostream_output) {
-            // the << operator will convert the UTF-8 string to ACP codepage
             auto s = str(u8"abc²âÊÔ");
             std::stringstream ss1, ss2;
             ss1 << s;
-            ss2 << "abc²âÊÔ";
+            ss2 << u8"abc²âÊÔ";
             assert(ss1.str() == ss2.str());
         }
 

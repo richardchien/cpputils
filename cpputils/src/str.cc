@@ -3,6 +3,7 @@
 #include <codecvt>
 #include <algorithm>
 #include <cwctype>
+#include <iostream>
 
 #include "utf8/utf8.h"
 #include "exceptions.h"
@@ -80,7 +81,11 @@ rc::str &rc::str::operator=(const str &other) {
 
 std::ostream &rc::operator<<(std::ostream &os, const str &obj) {
 #ifdef _WIN32
-    os << widechar_to_multibyte(CP_ACP, multibyte_to_widechar(CP_UTF8, obj.inner_str_.c_str()).get());
+    if (os.rdbuf() == std::cout.rdbuf()) {
+        os << widechar_to_multibyte(CP_ACP, multibyte_to_widechar(CP_UTF8, obj.inner_str_.c_str()).get());
+    } else {
+        os << obj.inner_str_;
+    }
 #else
     os << obj.inner_str_;
 #endif

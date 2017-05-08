@@ -69,8 +69,8 @@ namespace rc {
         /**
          * \brief Write the string to the given ostream.
          * 
-         * NOTE: If it's on WIN32, this will convert the UTF-8 string to ANSI codepage first.
-         * Because of the converting, be careful when using this operator with a std::stringstream.
+         * NOTE: If it's on WIN32 and the ostream is "cout",
+         * this will convert the UTF-8 string to ANSI codepage first.
          * 
          * \param os output stream
          * \param obj str object
