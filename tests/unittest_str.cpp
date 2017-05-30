@@ -1,20 +1,12 @@
 #include "CppUnitTest.h"
 
 #include "cpputils/include/cpputils.h"
+#include "helpers.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace rc;
 
 namespace tests {
-    static void assert(bool condition, const wchar_t *msg = nullptr) {
-        Assert::IsTrue(condition, msg);
-    }
-
-    static void fail(const wchar_t *msg = nullptr) {
-        Assert::Fail(msg);
-    }
-
-    static void pass() { }
 
     TEST_CLASS(UnitTest_str) {
     public:

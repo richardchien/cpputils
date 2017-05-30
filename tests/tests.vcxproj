@@ -160,12 +160,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="unittest_str.cc" />
+    <ClCompile Include="unittest_bytes.cpp" />
+    <ClCompile Include="unittest_str.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cpputils\cpputils.vcxproj">
       <Project>{51313cb8-a374-445d-9ad7-666ef19f1daf}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="helpers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

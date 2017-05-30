@@ -38,9 +38,18 @@
     <ClInclude Include="include\str.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\regex_helpers.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\win32_encoding.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\win32_bytes.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\str.cc">
+    <ClCompile Include="src\str.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

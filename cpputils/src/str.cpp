@@ -7,32 +7,11 @@
 
 #include "utf8/utf8.h"
 #include "exceptions.h"
+#include "regex_helpers.h"
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
-static auto multibyte_to_widechar(int code_page, const char *multibyte_str) {
-    auto len = MultiByteToWideChar(code_page, 0, multibyte_str, -1, nullptr, 0);
-    auto c_wstr_sptr = std::shared_ptr<wchar_t>(new wchar_t[len + 1]);
-    MultiByteToWideChar(code_page, 0, multibyte_str, -1, c_wstr_sptr.get(), len);
-    return c_wstr_sptr;
-}
-
-static auto widechar_to_multibyte(int code_page, const wchar_t *widechar_str) {
-    auto len = WideCharToMultiByte(code_page, 0, widechar_str, -1, nullptr, 0, nullptr, nullptr);
-    auto c_str_sptr = std::shared_ptr<char>(new char[len + 1]);
-    WideCharToMultiByte(code_page, 0, widechar_str, -1, c_str_sptr.get(), len, nullptr, nullptr);
-    return c_str_sptr;
-}
+#include "win32_encoding.h"
 #endif
-
-static std::string regex_escape(const std::string &s) {
-    const std::regex esc("[.^$|()\\[\\]{}*+?\\\\]");
-    const std::string rep("\\\\&");
-    return regex_replace(s, esc, rep,
-                         std::regex_constants::match_default | std::regex_constants::format_sed);
-}
 
 rc::str::str() {}
 
@@ -52,7 +31,7 @@ rc::str::str(const std::wstring &wstr) : str() {
 
 rc::str::str(const wchar_t *c_wstr) : str(std::wstring(c_wstr)) {}
 
-rc::str::str(nullptr_t) {
+rc::str::str(nullptr_t) : str() {
     this->inner_str_ = "nullptr";
 }
 
@@ -82,7 +61,7 @@ rc::str &rc::str::operator=(const str &other) {
 std::ostream &rc::operator<<(std::ostream &os, const str &obj) {
 #ifdef _WIN32
     if (os.rdbuf() == std::cout.rdbuf()) {
-        os << widechar_to_multibyte(CP_ACP, multibyte_to_widechar(CP_UTF8, obj.inner_str_.c_str()).get());
+        os << win32::widechar_to_multibyte(CP_ACP, win32::multibyte_to_widechar(CP_UTF8, obj.inner_str_.c_str()).get());
     } else {
         os << obj.inner_str_;
     }

@@ -19,13 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\str.cc" />
+    <ClCompile Include="src\str.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\win32_bytes.h" />
     <ClInclude Include="include\cpputils.h" />
     <ClInclude Include="include\exceptions.h" />
+    <ClInclude Include="include\regex_helpers.h" />
     <ClInclude Include="include\simple_types.h" />
     <ClInclude Include="include\str.h" />
+    <ClInclude Include="include\win32_encoding.h" />
     <ClInclude Include="src\utf8\checked.h" />
     <ClInclude Include="src\utf8\core.h" />
     <ClInclude Include="src\utf8\unchecked.h" />
