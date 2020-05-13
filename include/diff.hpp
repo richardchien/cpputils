@@ -133,5 +133,12 @@ namespace rc {
             };
             print_diff_path(src, dst, myers_diff(src, dst));
         }
+        {
+            const std::vector<int> src;
+            const std::vector<int> dst{1, 2, 3};
+            print_diff_path(src, dst, myers_diff(src, dst));
+            print_diff_path(dst, src, myers_diff(dst, src));
+            print_diff_path(dst, dst, myers_diff(dst, dst));
+        }
     }
 } // namespace rc
