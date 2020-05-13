@@ -6,10 +6,13 @@
 #include <vector>
 
 namespace rc {
+    using byte = uint8_t;
+    using byte_vec = std::vector<byte>;
+
     inline bool _is_big_endian() {
         union {
             uint32_t val;
-            uint8_t bytes[sizeof(uint32_t)];
+            byte bytes[sizeof(uint32_t)];
         } u{0x01020304};
         return u.bytes[0] == 0x01;
     }
@@ -23,14 +26,13 @@ namespace rc {
         return _is_big_endian() ? big_endian : little_endian;
     }
 
-    using byte = uint8_t;
-    using byte_vec = std::vector<byte>;
+#define __trivial_only(T) std::enable_if_t<std::is_trivial_v<T>> * = nullptr
 
-    template <typename T>
-    byte_vec val_to_bytes(T val, Endian endian = system_endian()) {
+    template <typename T, __trivial_only(T)>
+    byte_vec val_to_bytes(const T val, const Endian endian = system_endian()) {
         union {
             T val;
-            uint8_t bytes[sizeof(T)];
+            byte bytes[sizeof(T)];
         } u{val};
         if (endian != system_endian()) {
             std::reverse(std::begin(u.bytes), std::end(u.bytes));
@@ -38,12 +40,12 @@ namespace rc {
         return {std::begin(u.bytes), std::end(u.bytes)};
     }
 
-    template <typename T>
-    T bytes_to_val(const byte_vec &bytes, Endian endian = system_endian()) {
+    template <typename T, __trivial_only(T)>
+    T bytes_to_val(const byte_vec &bytes, const Endian endian = system_endian()) {
         assert(bytes.size() == sizeof(T));
         union {
             T val;
-            uint8_t bytes[sizeof(T)];
+            byte bytes[sizeof(T)];
         } u;
         if (endian == system_endian()) {
             std::copy(bytes.cbegin(), bytes.cend(), std::begin(u.bytes));
@@ -53,16 +55,18 @@ namespace rc {
         return u.val;
     }
 
-    template <typename T>
-    T swap_endian(T val) {
+    template <typename T, __trivial_only(T)>
+    T swap_endian(const T val) {
         const auto endian = system_endian();
         return bytes_to_val<T>(val_to_bytes<T>(val, endian), static_cast<Endian>(-endian));
     }
 
-    template <typename T>
-    T ensure_endian(T val, Endian endian) {
+    template <typename T, __trivial_only(T)>
+    T ensure_endian(const T val, const Endian endian) {
         return endian == system_endian() ? val : swap_endian<T>(val);
     }
+
+#undef __trivial_only
 
     inline void test_endian_module() {
         static_assert(-little_endian == big_endian);
