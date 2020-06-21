@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-#include <cassert>
 #include <cstdint>
 #include <vector>
 
@@ -42,7 +41,7 @@ namespace rc {
 
     template <typename T, __trivial_only(T)>
     T bytes_to_val(const byte_vec &bytes, const Endian endian = system_endian()) {
-        assert(bytes.size() == sizeof(T));
+        // assert(bytes.size() == sizeof(T));
         union {
             T val;
             byte bytes[sizeof(T)];
@@ -67,7 +66,11 @@ namespace rc {
     }
 
 #undef __trivial_only
+} // namespace rc
 
+#include <cassert>
+
+namespace rc::test {
     inline void test_endian_module() {
         static_assert(-little_endian == big_endian);
         static_assert(sizeof(byte) == 1);
@@ -81,4 +84,4 @@ namespace rc {
         assert(val_to_bytes<int32_t>(ensure_endian<int32_t>(0x01020304, little_endian))[0] == 0x04);
         assert(val_to_bytes<int32_t>(ensure_endian<int32_t>(0x01020304, big_endian))[0] == 0x01);
     }
-} // namespace rc
+} // namespace rc::test

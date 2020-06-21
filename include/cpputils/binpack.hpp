@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include <cstdint>
 #include <string>
 #include <type_traits>
@@ -125,7 +124,11 @@ namespace rc {
         byte_vec _bytes;
         Endian _endian = little_endian;
     };
+} // namespace rc
 
+#include <cassert>
+
+namespace rc::test {
     inline void test_binpack_module() {
         BinPack binpack;
 
@@ -159,4 +162,4 @@ namespace rc {
         BinPack bp2{binpack.data(), binpack.data() + binpack.size()};
         assert(bp2.get<int>() == 0x01020304);
     }
-} // namespace rc
+} // namespace rc::test
