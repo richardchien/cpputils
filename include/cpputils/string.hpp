@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
 #include <limits>
 #include <string>
 #include <string_view>
@@ -52,6 +53,21 @@ namespace rc {
         string_rtrim(s);
     }
 
+    inline void string_tolower(std::string &s) {
+        std::transform(s.cbegin(), s.cend(), s.begin(), [](auto ch) { return std::tolower(ch); });
+    }
+
+    inline void string_toupper(std::string &s) {
+        std::transform(s.cbegin(), s.cend(), s.begin(), [](auto ch) { return std::toupper(ch); });
+    }
+
+    template <typename Func, typename S, typename... Args>
+    auto string_blah_copy(Func &&func, S &&s, Args &&... args) {
+        std::decay_t<S> s_copy = std::forward<S>(s);
+        func(s_copy, args...);
+        return s_copy;
+    }
+
     using std::to_string;
 
     template <typename T, std::enable_if_t<std::is_convertible_v<T &&, std::string>> * = nullptr>
@@ -63,7 +79,11 @@ namespace rc {
     std::string to_string(T val) {
         return val ? "true" : "false";
     }
+} // namespace rc
 
+#include <cassert>
+
+namespace rc::test {
     inline void test_string_module() {
         assert(string_startswith("foobar", "foo"));
         assert(!string_startswith("foobar", "bar"));
@@ -80,6 +100,18 @@ namespace rc {
         string_trim(s);
         assert(s == "hello");
 
+        s = "heLLo你好";
+        string_tolower(s);
+        assert(s == "hello你好");
+        string_toupper(s);
+        assert(s == "HELLO你好");
+
+        s = " hello ";
+        assert(string_blah_copy(string_trim, s) == "hello");
+        assert(s == " hello ");
+        assert(string_blah_copy(string_replace, s, " ", "a") == "ahelloa");
+        assert(s == " hello ");
+
         using rc::to_string;
         assert(to_string(123u) == "123");
         assert(to_string(-123) == "-123");
@@ -92,4 +124,4 @@ namespace rc {
         } a;
         assert(to_string(a) == "foo");
     }
-} // namespace rc
+} // namespace rc::test
